@@ -1,3 +1,4 @@
+[![Python 2.7](https://img.shields.io/badge/python-2.7.15-blue.svg)](https://www.python.org/downloads/release/python-270/)
 <a href="https://codeclimate.com/github/inarli/github-jira-issue-updater/maintainability"><img src="https://api.codeclimate.com/v1/badges/fd1ed433dc911e48178f/maintainability" /></a>
 
 # Nedir? 
