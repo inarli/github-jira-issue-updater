@@ -1,46 +1,49 @@
 [![Python 2.7](https://img.shields.io/badge/python-2.7.15-blue.svg)](https://www.python.org/downloads/release/python-270/)
 <a href="https://codeclimate.com/github/inarli/github-jira-issue-updater/maintainability"><img src="https://api.codeclimate.com/v1/badges/fd1ed433dc911e48178f/maintainability" /></a>
 
-# Nedir? 
-Jira ve Github kullanılan projeler için pull requestteki review sonucuna göre ilgili işi jira üzerinde ilerlettiren küçük bir uygulamadır.
+# What? 
+This application helps to move the issues on kanban board automatically according to Github pull request activities for the projects which are using Jira to tracking issues. 
 
-# Nereden çıktı?
-İş takibini jira üzerinde yapıyoruz ve github üzerindeki branch isimlendirmemizi de jira issue id ileriyle aynı olacak şekilde belirliyoruz.
-Bir iş için pull request açıldıysa jira üzerinde o anki konumu code review oluyor. 
-İşin release edilebilmesi veya QA testine başlanabilmesi için code review işleminden geçmiş olması gerekli fakat QA engineer jira üzerinde sadece review edilmiş statüsündeki işlere odaklanıyor.
-Bu yüzden github üzerindeki pull request'in review işlemi yapıldıktan sonra otomatik olarak ilerletilmesi gerekiyordu. Bu amaçla küçük bir uygulamaya ihtiyaç duyduk.
+# Why?
+In our company, we are using Jira to tracking the issues and using Github to manage the sources. We have already integrated Jira with Github with a plugin and we are using a strategy for this integration for branches and commit messages. But, this plugin does not solve all the needs. For example, the issues don't move automatically when somebody creates a pull request for the issues. The issue should be in a specific board column (for example code review) after somebody creates a pull request for the issue. Before this library, we had been doing this actions by ourself, manually. Because, in QA testing side, they don't know Github and source code and code review process. They are using Jira and automatically deployed test environments. And they don't know the real staus of issue if somebody forgot the move the issue on the kanban board.
 
-# Nasıl Çalışır?
-Uygulama basitçe github webhookundan gelen bilgilere göre jira issue'sunu hareket ettirir. Bu işlemi yaparken de github webhook'unu kullanır.
+# How works?
+Basically, we are using Jira API and Github Hooks mechanism to track the issues and pull request actions.
 
-# Neler Gerekli?
-1 - Bir jira accountu ve o hesap ile alınmış bir api token. https://id.atlassian.com/manage/api-tokens,
+# What do you need?
 
-2 - Github reponuzda web hook ekleyebilme yetkisi (yoksa)
+1 - A Jira Account to get [api token](https://id.atlassian.com/manage/api-tokens)
+2 - Permission to add a hook the repository (on Github only for now).
+3 - And a Heroku account (optional)
 
-3 - Uygulamayı herokuda ayağa kaldıracaksanız bir heroku hesabı.
+# How can you use?
 
-# Nasıl kullanılır?
-1. adım : Öncelikle jira work flowunda transition idlerini bilmeniz gerekli.
-Size kod reviewdan geçince geçeceği statünün ve review eden kişi değişiklik isteyince geçeceği statünün transition idleri lazım. Bu ikisini öğrenmek için jira apisini kullanabilirsiniz. Gerekli açıklamalar burada mevcut.
-https://docs.atlassian.com/software/jira/docs/api/REST/7.6.1/?_ga=2.159860159.344407607.1542286174-1848267653.1477928327#api/2/issue-getTransitions
+*Step 1:* You should know the transition id's of your project flow. So, you should now the next column id of the board after code review finished. Also, there is another id which is using to understand the next state of the issue on the board when the code needs some changes after code review. To learn these ids, we are using 
+[this api](https://docs.atlassian.com/software/jira/docs/api/REST/7.6.1/#api/2/issue-getTransitions) endpoint.
 
-2. adım : Bu uygulamayı bir yerde ayağa kaldırın. Heroku'yu tavsiye ederim çünkü uygulama herokuda kolayca çalışır hale gelecek şekilde hazırlandı ve ücretsiz bir dyno işinizi görecektir. Yine de başka bir yol tercih ederseniz siz bilirsiniz, o da kolay. Gunicorn ile kolayca servis edebilirsiniz. Zaten Proc dosyasına bakarsanız heroku da öyle çalıştırıyor. 
-3. adım : Uygulamanın adresini ve endpointi github hook servisine vereceğiz. Hangi repo için kullanacaksanız o reponun settings'ine gidin ve web hooks sekmesine geçin. Yeni hook ekleyin, aşağıdaki ekran görüntüleri size yardımcı olacaktır diye umuyorum
+*Step 2:* We suggest the Heroku (free one is enough) but you can use other services. You need to deploy the application. You can use Gunicorn to run as a service. Please check the Procfile for more information.
+
+*Step 3:* After that, you need to create a webhook on github. Follow the below screenshots:
 ![image](https://user-images.githubusercontent.com/1387333/48555337-f762a680-e8f1-11e8-84bd-02b40c6c3a5c.png)
-Sayfayı aşağı doğru kaydırın
 ![image](https://user-images.githubusercontent.com/1387333/48555386-1a8d5600-e8f2-11e8-9e90-be53839a16ba.png)
 ![image](https://user-images.githubusercontent.com/1387333/48555248-aeaaed80-e8f1-11e8-9b13-c808b0fd033c.png)
-4. adım : heroku da bir postgresql database oluşturun ve size vereceği bağlantı adresini projedeki .env dosyasına yazın. Tabi öncesinde .env.dist olan ismini .env olarak değiştirmeyi unutmayın.
-5. adım : proje içindeki sql/dump.sql dosyasını bu veritabanına import edin.
 
-Artık github reponuza her yeni pull request açıldığında bu adrese bazı bilgiler gönderecek ve uygulama jira hesabınıza api üzerinden erişerek ilgili issue'nun statüsünü güncelleyecektir.
+*Step 4:* We have a .env file and we are using Postgresql to track the relation between Jira and Github. Please copy 
+the `.env.dist` file as `.env` and fill the parameters. 
 
-# Dikkat edilmesi gereken noktalar
-Branch isimlerinizin jira issue idleriyle aynı olması gerekli. Örneğin JIRA-1234 isimli bir issue id için bir pull request açtıysanız branch ismi de JIRA-1234 olmalı.
+*Stem 5:* At the end, you need to import `sql/dump.sql` file to your database. 
 
-# Teşekkür
+Now, you are ready.
+
+# Some Critical Points
+
+ - Your branch names should be same with your Jira issue id. (For example, you have an issue on Jira as JIRA-1234. You 
+should create a branch directly named as JIRA-1234.)
+
+# Thanks 
+
 @suhaboncukcu
 
-# Destek
-Eğer kurulum konusunda sorularınız varsa repoda bir issue açarak sorabilirniz.
+# Need Help
+
+You can create an issue if you need any help about the installation part.
