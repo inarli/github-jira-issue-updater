@@ -37,7 +37,7 @@ Sayfayı aşağı doğru kaydırın
 Artık github reponuza her yeni pull request açıldığında bu adrese bazı bilgiler gönderecek ve uygulama jira hesabınıza api üzerinden erişerek ilgili issue'nun statüsünü güncelleyecektir.
 
 # Dikkat edilmesi gereken noktalar
-Branch isimlerinizin jira issue idleriyle aynı olması gerekli. Örneğin JIRA-1234 isimli bir issue id için bir pull request açtıysanız branch ismi de JIRA-1234 olmalı.
+Branch isimlerinizin jira issue idleriyle aynı olması gerekli. Örneğin JIRA-1234 isimli bir issue id için bir pull request açtıysanız branch ismi de JIRA-1234 olmalı ve pull request mesajınız jira task id sini içermeli. Uygulama her ikisini de kontrol edip task idsini bulmaya çalışacaktır.
 
 # Teşekkür
 @suhaboncukcu
