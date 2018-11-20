@@ -2,9 +2,30 @@ import base64
 import json
 import os
 import requests
+import re
 
 
 class jira:
+
+    def get_project_prefix_from_issue_id(self, issue_id):
+        parsed = issue_id.split('-')
+        if len(parsed) > 1:
+            return parsed[0].upper()
+
+        return None
+
+    def get_issue_id_from_github_payload(self, payload):
+        issue_id = None
+        pattern = '[A-Z]{2,}-\d+'
+        matches = re.search(pattern, payload['pull_request']['head']['ref'])
+        if matches is not None:
+            issue_id = matches.group(0)
+
+        matches = re.search(pattern, payload['pull_request']['title'])
+        if matches is not None:
+            issue_id = matches.group(0)
+
+        return issue_id
 
     def issue_transition_update(self, issue_id, new_transition_id):
 

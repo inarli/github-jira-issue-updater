@@ -2,6 +2,7 @@ import requests
 from ipaddress import ip_address, ip_network
 import datetime
 from src.service.database import database
+import os
 
 
 class helper:
@@ -31,3 +32,23 @@ class helper:
             conn.close()
         except Exception, e:
             print str(e)
+
+    def check_github_pull_request_payload(self, payload):
+        if not 'review' in payload \
+                or not 'action' in payload \
+                or payload['action'] != 'submitted' \
+                or not 'user' in payload['review'] \
+                or not 'state' in payload['review'] \
+                or not 'user' in payload['pull_request'] \
+                or not 'number' in payload['pull_request']:
+            return False
+        else:
+            return True
+
+    def get_transition_id(self, pr_state):
+        transition_id = None
+        if pr_state == 'changes_requested':
+            transition_id = os.getenv('JIRA_TRANSITION_REJECT_ID')
+        elif pr_state == 'approved':
+            transition_id = os.getenv('JIRA_TRANSITION_APPROVED_ID')
+        return transition_id
