@@ -40,6 +40,9 @@ Now, you are ready.
  - Your branch names should be same with your Jira issue id. (For example, you have an issue on Jira as JIRA-1234. You 
 should create a branch directly named as JIRA-1234.)
 
+OR 
+ - Your pr message text must be include jira task id. Both apply.
+
 # Thanks 
 
 @suhaboncukcu
