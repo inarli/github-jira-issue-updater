@@ -43,4 +43,4 @@ Branch isimlerinizin jira issue idleriyle aynı olması gerekli. Örneğin JIRA-
 @suhaboncukcu @hkulekci
 
 # Destek
-Eğer kurulum konusunda sorularınız varsa repoda bir issue açarak sorabilirniz.
+Eğer kurulum konusunda sorularınız varsa repoda bir issue açarak sorabilirsiniz.
